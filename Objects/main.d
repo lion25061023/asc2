@@ -30,3 +30,9 @@
 .\objects\main.o: .\Library\misc.h
 .\objects\main.o: .\System\Delay.h
 .\objects\main.o: .\Hardware\OLED.h
+.\objects\main.o: .\Hardware\Key.h
+.\objects\main.o: .\System\Timer.h
+.\objects\main.o: .\Hardware\Motor.h
+.\objects\main.o: .\Hardware\Encoder.h
+.\objects\main.o: .\Hardware\Serial.h
+.\objects\main.o: D:\dan pian ji 32\ARM\ARMCC\Bin\..\include\stdio.h
