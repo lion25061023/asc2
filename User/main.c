@@ -14,10 +14,11 @@
 
 
 
-//开始pid
+//mode1参数，开始pid
 float target=0,actual,out;
 float kp=0.3,ki=0.1,kd=0.1;
 float error0,error1,error2;
+//mode2 参数
 
 int main(void)
 {
@@ -37,54 +38,62 @@ int main(void)
 		//展示模式
 		OLED_ShowString(1,1,"mode");
 		OLED_ShowNum(1,6,mode,1);
-		
-		//判断串口输入，算target
-		if (Serial_RxFlag==1)
+		if (mode==0)
 		{
-			OLED_ShowString(4,1,Serial_RxPacket);
-			if (Serial_RxPacket[5]=='t' && Serial_RxPacket[6]!='-')
+			//判断串口输入，算target
+			if (Serial_RxFlag==1)
 			{
-				if (strlen(Serial_RxPacket)==7)
+				OLED_ShowString(4,1,Serial_RxPacket);
+				if (Serial_RxPacket[5]=='t' && Serial_RxPacket[6]!='-')
 				{
-				target=Serial_RxPacket[6]-48;
+					if (strlen(Serial_RxPacket)==7)
+					{
+					target=Serial_RxPacket[6]-48;
+					}
+					if (strlen(Serial_RxPacket)==8)
+					{
+					target=(Serial_RxPacket[6]-48)*10+(Serial_RxPacket[7]-48);
+					}
+					if (strlen(Serial_RxPacket)==9)
+					{
+					target=(Serial_RxPacket[6]-48)*100+(Serial_RxPacket[7]-48)*10+(Serial_RxPacket[8]-48);
+					}
 				}
-				if (strlen(Serial_RxPacket)==8)
+				else if (Serial_RxPacket[5]=='t' && Serial_RxPacket[6]=='-')
 				{
-				target=(Serial_RxPacket[6]-48)*10+(Serial_RxPacket[7]-48);
+					if (strlen(Serial_RxPacket)==8)
+					{
+						target=Serial_RxPacket[7]-48;
+						target=-target;
+					}
+					if (strlen(Serial_RxPacket)==9)
+					{
+						target=(Serial_RxPacket[7]-48)*10+(Serial_RxPacket[8]-48);
+						target=-target;
+					}
+					if (strlen(Serial_RxPacket)==10)
+					{
+						target=(Serial_RxPacket[7]-48)*100+(Serial_RxPacket[8]-48)*10+(Serial_RxPacket[9]-48);
+						target=-target;
+					}
 				}
-				if (strlen(Serial_RxPacket)==9)
-				{
-				target=(Serial_RxPacket[6]-48)*100+(Serial_RxPacket[7]-48)*10+(Serial_RxPacket[8]-48);
-				}
-			}
-			else if (Serial_RxPacket[5]=='t' && Serial_RxPacket[6]=='-')
-			{
-				if (strlen(Serial_RxPacket)==8)
-				{
-					target=Serial_RxPacket[7]-48;
-					target=-target;
-				}
-				if (strlen(Serial_RxPacket)==9)
-				{
-					target=(Serial_RxPacket[7]-48)*10+(Serial_RxPacket[8]-48);
-					target=-target;
-				}
-				if (strlen(Serial_RxPacket)==10)
-				{
-					target=(Serial_RxPacket[7]-48)*100+(Serial_RxPacket[8]-48)*10+(Serial_RxPacket[9]-48);
-					target=-target;
-				}
-			}
 			
-			Serial_RxFlag=0;
+				Serial_RxFlag=0;
 			
-		}
+			}
 		
 	
 		
 		
 	
 		Serial_Printf("%f,%f,%f\r\n",target,actual,out);
+		
+		}
+		else if (mode==1)
+		{
+			Motor_SetPWM(50);
+			Moter_SetPWM_B(200);
+		}
 		
 		
 		
@@ -104,28 +113,37 @@ void TIM1_UP_IRQHandler(void)
 		
 			
 			
-			//这里写pid
-			
-			actual=	Encoder_Get();
-			error2=error1;
-			error1=error0;
-			error0=target-actual;
-		
-			out+=kp*(error0-error1)+ki*error0+kd*(error0-2*error1+error2);
-		
-			if (out>100)
+			if (mode==0)
 			{
-				out=100;
+				//这里写pid
+			
+				actual=	Encoder_Get();
+				error2=error1;
+				error1=error0;
+				error0=target-actual;
+		
+				out+=kp*(error0-error1)+ki*error0+kd*(error0-2*error1+error2);
+		
+				if (out>100)
+				{
+					out=100;
+				}
+				if (out<-100)
+				{
+					out=-100;
+				}
+				Motor_SetPWM(out);
+			
+			
 			}
-			if (out<-100)
+			
+			else if (mode==1)
 			{
-				out=-100;
+				
 			}
-			Motor_SetPWM(out);
-			
-			
-		}
 
+		}
+			
 		key_tick();
 		
 		

@@ -3,5 +3,6 @@
 
 void Encoder_Init(void);
 int16_t Encoder_Get(void);
+int16_t Encoder_Get_B(void);
 
 #endif
