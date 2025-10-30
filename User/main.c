@@ -42,34 +42,46 @@ int main(void)
 		if (Serial_RxFlag==1)
 		{
 			OLED_ShowString(4,1,Serial_RxPacket);
-			if (strlen(Serial_RxPacket)==7)
+			if (Serial_RxPacket[5]=='t' && Serial_RxPacket[6]!='-')
 			{
+				if (strlen(Serial_RxPacket)==7)
+				{
 				target=Serial_RxPacket[6]-48;
-			}
-			if (strlen(Serial_RxPacket)==8)
-			{
+				}
+				if (strlen(Serial_RxPacket)==8)
+				{
 				target=(Serial_RxPacket[6]-48)*10+(Serial_RxPacket[7]-48);
-			}
-			if (strlen(Serial_RxPacket)==9)
-			{
+				}
+				if (strlen(Serial_RxPacket)==9)
+				{
 				target=(Serial_RxPacket[6]-48)*100+(Serial_RxPacket[7]-48)*10+(Serial_RxPacket[8]-48);
+				}
 			}
+			else if (Serial_RxPacket[5]=='t' && Serial_RxPacket[6]=='-')
+			{
+				if (strlen(Serial_RxPacket)==8)
+				{
+					target=Serial_RxPacket[7]-48;
+					target=-target;
+				}
+				if (strlen(Serial_RxPacket)==9)
+				{
+					target=(Serial_RxPacket[7]-48)*10+(Serial_RxPacket[8]-48);
+					target=-target;
+				}
+				if (strlen(Serial_RxPacket)==10)
+				{
+					target=(Serial_RxPacket[7]-48)*100+(Serial_RxPacket[8]-48)*10+(Serial_RxPacket[9]-48);
+					target=-target;
+				}
+			}
+			
 			Serial_RxFlag=0;
 			
 		}
 		
-		OLED_ShowString(2,1,"target");
-		OLED_ShowNum(2,7,target,3);
-		OLED_ShowString(3,1,"actual");
-		OLED_ShowNum(3,7,actual,3);
-		OLED_ShowString(3,11,"out");
-		if (out<100 && out>-100)
-		{
-			OLED_ShowNum(3,14,out,2);
-		}
-		else{
-			OLED_ShowNum(3,14,out,3);
-		}
+	
+		
 		
 	
 		Serial_Printf("%f,%f,%f\r\n",target,actual,out);
