@@ -36,3 +36,4 @@
 .\objects\main.o: .\Hardware\Encoder.h
 .\objects\main.o: .\Hardware\Serial.h
 .\objects\main.o: D:\dan pian ji 32\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\main.o: D:\dan pian ji 32\ARM\ARMCC\Bin\..\include\string.h

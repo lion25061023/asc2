@@ -121,9 +121,12 @@ void USART1_IRQHandler(void)
 		}
 		else if (RxState == 1)
 		{
-			if (RxData == '\r')
+			if (RxData == '%')
 			{
-				RxState = 2;
+				
+				RxState = 0;
+				Serial_RxPacket[pRxPacket] = '\0';
+				Serial_RxFlag = 1;
 			}
 			else
 			{
@@ -131,15 +134,7 @@ void USART1_IRQHandler(void)
 				pRxPacket ++;
 			}
 		}
-		else if (RxState == 2)
-		{
-			if (RxData == '\n')
-			{
-				RxState = 0;
-				Serial_RxPacket[pRxPacket] = '\0';
-				Serial_RxFlag = 1;
-			}
-		}
+		
 		
 		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 	}

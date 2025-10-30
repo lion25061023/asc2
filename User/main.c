@@ -6,17 +6,18 @@
 #include "Motor.h"
 #include "Encoder.h"
 #include "Serial.h"
+#include "string.h"
 
-uint8_t get_flag;
-uint8_t mode;
-int16_t pwm=50;
-int16_t speed;
+
+
+
+
 
 
 //开始pid
-float target=300.0,actual,out;
-float kp=0.5,ki=0.1,kd=0;
-float error0,error1,errorint;
+float target=0,actual,out;
+float kp=0.3,ki=0.1,kd=0.1;
+float error0,error1,error2;
 
 int main(void)
 {
@@ -33,20 +34,44 @@ int main(void)
 	
 	while (1)
 	{
-		
+		//展示模式
 		OLED_ShowString(1,1,"mode");
-		get_flag=key_get();
-		if (get_flag)
+		OLED_ShowNum(1,6,mode,1);
+		
+		//判断串口输入，算target
+		if (Serial_RxFlag==1)
 		{
-			OLED_ShowNum(1,6,mode,1);
-			mode=!mode;
+			OLED_ShowString(4,1,Serial_RxPacket);
+			if (strlen(Serial_RxPacket)==7)
+			{
+				target=Serial_RxPacket[6]-48;
+			}
+			if (strlen(Serial_RxPacket)==8)
+			{
+				target=(Serial_RxPacket[6]-48)*10+(Serial_RxPacket[7]-48);
+			}
+			if (strlen(Serial_RxPacket)==9)
+			{
+				target=(Serial_RxPacket[6]-48)*100+(Serial_RxPacket[7]-48)*10+(Serial_RxPacket[8]-48);
+			}
+			Serial_RxFlag=0;
 			
 		}
 		
+		OLED_ShowString(2,1,"target");
+		OLED_ShowNum(2,7,target,3);
+		OLED_ShowString(3,1,"actual");
+		OLED_ShowNum(3,7,actual,3);
+		OLED_ShowString(3,11,"out");
+		if (out<100 && out>-100)
+		{
+			OLED_ShowNum(3,14,out,2);
+		}
+		else{
+			OLED_ShowNum(3,14,out,3);
+		}
 		
-		
-		OLED_ShowNum(2,1,pwm,5);
-		OLED_ShowNum(3,1,actual,5);
+	
 		Serial_Printf("%f,%f,%f\r\n",target,actual,out);
 		
 		
@@ -64,15 +89,17 @@ void TIM1_UP_IRQHandler(void)
 		if (count>=40)
 		{
 			count=0;
-			speed=Encoder_Get();
+		
 			
 			
 			//这里写pid
-			actual=speed;
+			
+			actual=	Encoder_Get();
+			error2=error1;
 			error1=error0;
 			error0=target-actual;
-			errorint+=error0;
-			out=kp*error0+ki*errorint+kd*(error0-error1);
+		
+			out+=kp*(error0-error1)+ki*error0+kd*(error0-2*error1+error2);
 		
 			if (out>100)
 			{

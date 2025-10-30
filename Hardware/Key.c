@@ -1,11 +1,14 @@
 #include "stm32f10x.h"                  // Device header
 #include "Delay.h"
+#define up 1
+#define down 0
 
 /**
   * 函    数：按键初始化
   * 参    数：无
   * 返 回 值：无
   */
+uint8_t mode;
 void Key_Init(void)
 {
 	/*开启时钟*/
@@ -18,26 +21,26 @@ void Key_Init(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);						
 } 
-uint8_t mode_flag;
+uint16_t current;
+uint16_t previous;
 void key_tick(void)
 {
 	static uint8_t count;
 	count++;
-	if (count>=50)
+	if (count>=10)
 	{
 		count=0;
-		if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == 0)
+		previous=current;
+		current=GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0);
+		if (current==up && previous==down)
 		{
-			mode_flag=1;
+			mode=!mode;
 		}
+	
+			
+		
 		
 	}
 }
-uint8_t key_get(void)
-{
-	uint8_t temp=mode_flag;
-	mode_flag=0;
-	
-	return temp;
-}
+
 
