@@ -14,7 +14,7 @@ void Motor_Init(void)
 	PWM_Init();
 }
 
-void Motor_SetPWM(int16_t PWM)
+void Motor_SetPWM(float PWM)
 {
 	if (PWM >= 0)
 	{

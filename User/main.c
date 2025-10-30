@@ -11,6 +11,13 @@ uint8_t get_flag;
 uint8_t mode;
 int16_t pwm=50;
 int16_t speed;
+
+
+//开始pid
+float target=300.0,actual,out;
+float kp=0.5,ki=0.1,kd=0;
+float error0,error1,errorint;
+
 int main(void)
 {
 	
@@ -20,6 +27,7 @@ int main(void)
 	Encoder_Init();
 	Serial_Init();
 	Timer_Init();
+	
 	
 	
 	
@@ -34,9 +42,12 @@ int main(void)
 			mode=!mode;
 			
 		}
-		Motor_SetPWM(pwm);
+		
+		
+		
 		OLED_ShowNum(2,1,pwm,5);
-		OLED_ShowNum(3,1,speed,5);
+		OLED_ShowNum(3,1,actual,5);
+		Serial_Printf("%f,%f,%f\r\n",target,actual,out);
 		
 		
 		
@@ -54,6 +65,24 @@ void TIM1_UP_IRQHandler(void)
 		{
 			count=0;
 			speed=Encoder_Get();
+			
+			
+			//这里写pid
+			actual=speed;
+			error1=error0;
+			error0=target-actual;
+			errorint+=error0;
+			out=kp*error0+ki*errorint+kd*(error0-error1);
+		
+			if (out>100)
+			{
+				out=100;
+			}
+			if (out<-100)
+			{
+				out=-100;
+			}
+			Motor_SetPWM(out);
 			
 			
 		}
