@@ -16,10 +16,12 @@
 
 //mode1参数，开始pid
 float target=0,actual,out;
-float kp=0.3,ki=0.1,kd=0.1;
+float kp=0.8,ki=0.2,kd=0.1;
 float error0,error1,error2;
-//mode2 参数
-
+//mode0 参数
+float target_B=0,actual_B,out_B;
+float kp_B=0.4,ki_B=0,kd_B=0;
+float error0_B,error1_B,errorint_B;
 int main(void)
 {
 	
@@ -91,8 +93,7 @@ int main(void)
 		}
 		else if (mode==1)
 		{
-			Motor_SetPWM(50);
-			Moter_SetPWM_B(200);
+			Serial_Printf("%f,%f,%f\r\n",target_B,actual_B,out_B);
 		}
 		
 		
@@ -139,7 +140,21 @@ void TIM1_UP_IRQHandler(void)
 			
 			else if (mode==1)
 			{
-				
+				target_B += Encoder_Get();
+				actual_B +=	Encoder_Get_B();
+				error1_B =error0_B;
+				error0_B=target_B-actual_B;
+				errorint_B+=error0_B;
+				out_B=kp_B*error0_B+ki_B*errorint_B+kd_B*(error0_B-error1_B);
+				if (out_B>100)
+				{
+					out_B=100;
+				}
+				if (out_B<-100)
+				{
+					out_B=-100;
+				}
+				 Moter_SetPWM_B(out_B);
 			}
 
 		}
