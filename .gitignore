@@ -240,3 +240,4 @@ desktop.ini
 
 # 汇编源文件、源码文件和必要工程文件除外，其他产物均忽略
 
+DebugConfig/
