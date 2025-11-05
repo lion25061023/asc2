@@ -20,7 +20,7 @@ float kp=0.8,ki=0.2,kd=0.1;
 float error0,error1,error2;
 //mode0 参数
 float target_B=0,actual_B,out_B;
-float kp_B=0.4,ki_B=0.2,kd_B=0.1;
+float kp_B=0.3,ki_B=0.2,kd_B=0.1;
 float error0_B,error1_B,errorint_B;
 int main(void)
 {
