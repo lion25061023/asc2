@@ -1,74 +1,14 @@
-# 系统文件
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# 链接文件和符号链接 (根据你的系统)
-*.lnk
-*.url
-*.pif
-*.shared
-
-# 编译中间文件
-*.o
-*.obj
-*.lo
-*.la
-*.al
-*.a
-*.so
-*.so.*
-*.dylib
-*.dll
-
-# 预编译头文件
-*.gch
-*.pch
-
-# 备份文件
-*~
-*.bak
-*.backup
-*.tmp
-*.temp
-
-# 日志文件
-*.log
-logs/
-*.logs
-
-# 缓存目录
-.cache/
-*.cache
-
-# 构建输出
-build/
-dist/
-out/
-target/
-bin/
-obj/
-
-# 依赖目录
-node_modules/
-vendor/
-packages/
-
-# IDE 文件
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# 操作系统特定
-__pycache__/
-*.pyc
-
-# Keil MDK 文件
+# Keil MDK 项目文件
+*.wpink.*
 *.wspdx.*
 *.uvguix.*
 *.uvoptx
 *.uvprojx
 
-# 编译输出
+# 编译中间文件
+*.o
+*.obj
+*.exe
+
+# 其他临时文件
 DebugConfig/
